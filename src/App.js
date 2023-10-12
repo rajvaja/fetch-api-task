@@ -1,24 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect } from "react";
+import { fetchDataFromApi } from "./utils/api";
+import { getPostData } from "./store/slice/postSlice";
+import { useDispatch } from "react-redux";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Posts from "./components/Posts/Posts";
+import Navbar from "./components/navbar/Navbar";
+import PostDetails from "./components/PostDetailPage/PostDetails";
+import PostComments from "./components/PostCommentsPage/PostComments";
 
 function App() {
+  const dispatch = useDispatch();
+
+  const fetchPostData = () => {
+    fetchDataFromApi("/posts").then((res) => {
+      console.log(res);
+      dispatch(getPostData(res));
+    });
+  };
+
+  useEffect(() => {
+    fetchPostData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <BrowserRouter>
+      <Navbar/>
+        <Routes>
+          <Route path="/" element={<Posts/>}/>
+          <Route path="/posts/:id" element={<PostDetails/>}/>
+          <Route path="/posts/:id/comments" element={<PostComments/>}/>
+
+
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
